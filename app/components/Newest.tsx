@@ -6,14 +6,15 @@ import Image from "next/image";
 
 export default async function Newest() {
   // Sử dụng sanityFetch để hỗ trợ revalidation
-  const query = `*[_type == "product"][0...4] | order(_createdAt desc) {
-        _id,
-        price,
-        name,
-        "slug": slug.current,
-        "categoryName": category->name,
-        "imageUrl": images[0].asset->url
-      }`;
+  const query = `*[_type == "product"] | order(_createdAt desc)[0...4] {
+  _id,
+  _createdAt,
+  price,
+  name,
+  "slug": slug.current,
+  "categoryName": category->name,
+  "imageUrl": images[0].asset->url
+}`;
 
   // Fetch dữ liệu với cache và revalidate khi cần
   const data: simplifiedProduct[] = await sanityFetch({

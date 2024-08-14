@@ -1,35 +1,37 @@
 import Link from "next/link";
 import { simplifiedProduct } from "../interface";
-import { client } from "../lib/sanity";
+import { sanityFetch } from "../lib/sanity"; // Sử dụng sanityFetch thay vì client
 import Image from "next/image";
 
-async function getData(cateogry: string) {
+// Sử dụng sanityFetch để hỗ trợ revalidation và cache
+async function getData() {
   const query = `*[_type == "product"] {
         _id,
-          "imageUrl": images[0].asset->url,
-          price,
-          name,
-          "slug": slug.current,
-          "categoryName": category->name
+        "imageUrl": images[0].asset->url,
+        price,
+        name,
+        "slug": slug.current,
+        "categoryName": category->name
       }`;
 
-  const data = await client.fetch(query);
+  // Fetch dữ liệu với cache và revalidate khi cần
+  const data: simplifiedProduct[] = await sanityFetch({
+    query,
+    tags: ["product"], // Tag giúp revalidate cache khi có thay đổi
+  });
 
   return data;
 }
 
+// Chỉ định là trang dynamic
 export const dynamic = "force-dynamic";
 
-export default async function CategoryPage({
-  params,
-}: {
-  params: { category: string };
-}) {
-  const data: simplifiedProduct[] = await getData(params.category);
+export default async function CategoryPage() {
+  const data: simplifiedProduct[] = await getData();
 
   return (
     <div className="bg-white">
-      <div className="mx-auto max-w-2xl px-4 sm:px-6  lg:max-w-7xl lg:px-8">
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900">
             Our Products
