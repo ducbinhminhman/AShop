@@ -4,23 +4,18 @@ import { client } from "../lib/sanity";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 
-async function getData() {
+export default async function Newest() {
+  // Fetch data directly inside the component for dynamic data rendering
   const query = `*[_type == "product"][0...4] | order(_createdAt desc) {
         _id,
-          price,
+        price,
         name,
-          "slug": slug.current,
-          "categoryName": category->name,
-          "imageUrl": images[0].asset->url
+        "slug": slug.current,
+        "categoryName": category->name,
+        "imageUrl": images[0].asset->url
       }`;
 
-  const data = await client.fetch(query);
-
-  return data;
-}
-
-export default async function Newest() {
-  const data: simplifiedProduct[] = await getData();
+  const data: simplifiedProduct[] = await client.fetch(query);
 
   return (
     <div className="bg-white">
