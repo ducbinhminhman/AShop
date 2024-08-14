@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { simplifiedProduct } from "../interface";
-import { client } from "../lib/sanity";
+import { sanityFetch } from "../lib/sanity"; // Sử dụng sanityFetch thay vì client
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 
 export default async function Newest() {
-  // Fetch data directly inside the component for dynamic data rendering
+  // Sử dụng sanityFetch để hỗ trợ revalidation
   const query = `*[_type == "product"][0...4] | order(_createdAt desc) {
         _id,
         price,
@@ -15,7 +15,11 @@ export default async function Newest() {
         "imageUrl": images[0].asset->url
       }`;
 
-  const data: simplifiedProduct[] = await client.fetch(query);
+  // Fetch dữ liệu với cache và revalidate khi cần
+  const data: simplifiedProduct[] = await sanityFetch({
+    query,
+    tags: ["product"], // Tag giúp revalidate cache khi có thay đổi
+  });
 
   return (
     <div className="bg-white">
