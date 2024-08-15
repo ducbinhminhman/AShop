@@ -19,6 +19,7 @@ export default function ShoppingCartModal() {
     removeItem,
     totalPrice,
     redirectToCheckout,
+    clearCart,  // Import clearCart from useShoppingCart
   } = useShoppingCart();
 
   async function handleCheckoutClick(event: any) {
@@ -26,12 +27,16 @@ export default function ShoppingCartModal() {
     try {
       const result = await redirectToCheckout();
       if (result?.error) {
-        console.log("result");
+        console.log("Error during checkout:", result.error.message);
+      } else {
+        // If the payment is successful, clear the cart
+        clearCart();
       }
     } catch (error) {
-      console.log(error);
+      console.log("Error during checkout:", error);
     }
   }
+
   return (
     <Sheet open={shouldDisplayCart} onOpenChange={() => handleCartClick()}>
       <SheetContent className="sm:max-w-lg w-[90vw]">
@@ -43,7 +48,7 @@ export default function ShoppingCartModal() {
           <div className="mt-8 flex-1 overflow-y-auto">
             <ul className="-my-6 divide-y divide-gray-200">
               {cartCount === 0 ? (
-                <h1 className="py-6">You dont have any items</h1>
+                <h1 className="py-6">You don't have any items</h1>
               ) : (
                 <>
                   {Object.values(cartDetails ?? {}).map((entry) => (
