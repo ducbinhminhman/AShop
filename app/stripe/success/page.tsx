@@ -1,8 +1,20 @@
+"use client";
+
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCheck } from "lucide-react";
 import Link from "next/link";
+import { useShoppingCart } from "use-shopping-cart";
 
-export default function stripeSuccess() {
+export default function StripeSuccess() {
+  const { clearCart } = useShoppingCart();
+
+  useEffect(() => {
+    // Clear the cart only once when this component mounts
+    clearCart();
+    console.log("Cart cleared after successful payment.");
+  }, []); // Make sure clearCart is included in the dependency array
+
   return (
     <div className="h-screen">
       <div className="mt-32 md:max-w-[50vw] mx-auto">
@@ -12,12 +24,12 @@ export default function stripeSuccess() {
             Payment Done!
           </h3>
           <p className="text-gray-600 my-2">
-            Thank you for you pruchase We hope you enjoy it
+            Thank you for your purchase. We hope you enjoy it!
           </p>
           <p>Have a great day!</p>
 
           <Button asChild className="mt-5">
-            <Link href="/">GO back</Link>
+            <Link href="/">Go back</Link>
           </Button>
         </div>
       </div>

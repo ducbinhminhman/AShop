@@ -19,23 +19,32 @@ export default function ShoppingCartModal() {
     removeItem,
     totalPrice,
     redirectToCheckout,
-    clearCart,  // Import clearCart from useShoppingCart
-  } = useShoppingCart();
+  } = useShoppingCart();  // Removed clearCart from here
 
   async function handleCheckoutClick(event: any) {
     event.preventDefault();
+  
+    console.log("Starting checkout process...");
+  
     try {
       const result = await redirectToCheckout();
+      
+      // Log the result to understand what happens after redirectToCheckout
+      console.log("Redirect to checkout result:", result);
+  
       if (result?.error) {
-        console.log("Error during checkout:", result.error.message);
+        console.error("Error during checkout:", result.error.message);
+        alert("There was an issue with your payment. Please try again.");
       } else {
-        // If the payment is successful, clear the cart
-        clearCart();
+        console.log("Redirecting to payment page...");
+        // Do not clear the cart here, handle that on the success page
       }
     } catch (error) {
-      console.log("Error during checkout:", error);
+      console.error("Unexpected error during checkout:", error);
+      alert("An unexpected error occurred. Please try again.");
     }
   }
+  
 
   return (
     <Sheet open={shouldDisplayCart} onOpenChange={() => handleCartClick()}>
